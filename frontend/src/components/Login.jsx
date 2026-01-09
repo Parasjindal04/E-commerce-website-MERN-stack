@@ -1,0 +1,290 @@
+import React, { useState } from "react";
+import logo from "../../public/logo.webp";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(
+        "http://localhost:4001/api/v1/user/login",
+        { email, password },
+        { withCredentials: true }
+      );
+
+      toast.success(res.data.message);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      localStorage.setItem("token", res.data.token);
+      navigate("/");
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.errors || "Login failed. Try again!"
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex justify-center items-center px-4 relative">
+
+      {/* Header */}
+      <header className="absolute top-0 left-0 w-full flex justify-between items-center p-5">
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="Logo" className="w-10 h-10 rounded-xl shadow-md" />
+          <Link to="/" className="text-2xl font-bold gradient-text">
+            CourseHeaven
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Link
+            to="/signup"
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:border-blue-600 hover:text-blue-600 transition-all"
+          >
+            Signup
+          </Link>
+
+          <Link
+            to="/courses"
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all"
+          >
+            Explore Courses
+          </Link>
+        </div>
+      </header>
+
+      {/* Login Card */}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100 fade-in-up">
+
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
+          Welcome Back 👋
+        </h2>
+
+        <p className="text-center text-gray-500 mb-6">
+          Login to continue learning
+        </p>
+
+        <form onSubmit={handleSubmit}>
+
+          {/* Email */}
+          <div className="mb-4">
+            <label className="text-gray-600 font-medium mb-2 block">
+              Email Address
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          {/* Password */}
+          <div className="mb-4">
+            <label className="text-gray-600 font-medium mb-2 block">
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 rounded-xl bg-gray-50 border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              placeholder="********"
+            />
+          </div>
+
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="text-center text-red-600 font-semibold mb-4">
+              {errorMessage}
+            </div>
+          )}
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="w-full py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg hover:scale-[1.03] transition-all"
+          >
+            Login
+          </button>
+        </form>
+
+        {/* Links */}
+        <div className="mt-6 text-center">
+          <p className="text-gray-500">
+            Don’t have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-semibold text-blue-600 hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Custom Animation Styles */}
+      <style>{`
+        @keyframes fadeInUp {
+          0% { opacity: 0; transform: translateY(15px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up {
+          animation: fadeInUp 0.6s ease-out;
+        }
+        .gradient-text {
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default Login;
+
+
+// import React, { useState } from "react";
+// import logo from "../../public/logo.webp";
+// import { Link, useNavigate } from "react-router-dom";
+// import axios from "axios";
+// import toast from "react-hot-toast";
+// import { BACKEND_URL } from "../utils/utils";
+// function Login() {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+
+//   const [errorMessage, setErrorMessage] = useState("");
+
+//   const navigate = useNavigate();
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     try {
+//       const response = await axios.post(
+//         `http://localhost:4001/api/v1/user/login`,
+//         {
+//           email,
+//           password,
+//         },
+//         {
+//           withCredentials: true,
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+//       console.log("Login successful: ", response.data);
+//       toast.success(response.data.message);
+//       localStorage.setItem("user", JSON.stringify(response.data));
+//       localStorage.setItem("token", response.data.token);
+//       navigate("/");
+//     } catch (error) {
+//       if (error.response) {
+//         setErrorMessage(error.response.data.errors || "Login failed!!!");
+//       }
+//     }
+//   };
+
+//   return (
+//     <div className="bg-gradient-to-r from-black to-blue-950 ">
+//       <div className="h-screen container mx-auto flex  items-center justify-center text-white">
+//         {/* Header */}
+//         <header className="absolute top-0 left-0 w-full flex justify-between items-center p-5  ">
+//           <div className="flex items-center space-x-2">
+//             <img src={logo} alt="Logo" className="w-10 h-10 rounded-full" />
+//             <Link to={"/"} className="text-xl font-bold text-orange-500">
+//               CourseHaven
+//             </Link>
+//           </div>
+//           <div className="flex items-center space-x-4">
+//             <Link
+//               to={"/signup"}
+//               className="bg-transparent border border-gray-500 p-1 text-sm md:text-md md:py-2 md:px-4 rounded-md"
+//             >
+//               Signup
+//             </Link>
+//             <Link
+//               to={"/courses"}
+//               className="bg-orange-500 p-1 text-sm md:text-md md:py-2 md:px-4 rounded-md"
+//             >
+//               Join now
+//             </Link>
+//           </div>
+//         </header>
+
+//         {/* Login Form */}
+//         <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-[500px] m-8 md:m-0 mt-20">
+//           <h2 className="text-2xl font-bold mb-4 text-center">
+//             Welcome to <span className="text-orange-500">CourseHaven</span>
+//           </h2>
+//           <p className="text-center text-gray-400 mb-6">
+//             Log in to access paid content!
+//           </p>
+
+//           <form onSubmit={handleSubmit}>
+//             <div className="mb-4">
+//               <label htmlFor="email" className=" text-gray-400 mb-2">
+//                 Email
+//               </label>
+//               <input
+//                 type="text"
+//                 id="email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//                 className="w-full p-3 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                 placeholder="name@email.com"
+//                 required
+//               />
+//             </div>
+//             <div className="mb-4">
+//               <label htmlFor="password" className=" text-gray-400 mb-2">
+//                 Password
+//               </label>
+//               <div className="relative">
+//                 <input
+//                   type="password"
+//                   id="password"
+//                   value={password}
+//                   onChange={(e) => setPassword(e.target.value)}
+//                   className="w-full p-3 rounded-md bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                   placeholder="********"
+//                   required
+//                 />
+//                 <span className="absolute right-3 top-3 text-gray-500 cursor-pointer">
+//                   👁️
+//                 </span>
+//               </div>
+//             </div>
+//             {errorMessage && (
+//               <div className="mb-4 text-red-500 text-center">
+//                 {errorMessage}
+//               </div>
+//             )}
+//             <button
+//               type="submit"
+//               className="w-full bg-orange-500 hover:bg-blue-600 text-white py-3 px-6 rounded-md transition"
+//             >
+//               Login
+//             </button>
+//           </form>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default Login;
